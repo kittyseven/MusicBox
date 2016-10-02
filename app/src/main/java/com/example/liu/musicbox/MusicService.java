@@ -32,7 +32,6 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("Service","Service--oncreate");
         am = getAssets();
         serviceReceiver = new ServiceReceiver();
         IntentFilter filter = new IntentFilter();
