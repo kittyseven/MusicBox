@@ -70,14 +70,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         musicsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                Intent intent = new Intent(CTL_ACTION);
+                intent.putExtra("DATA",Musics.get(position).DATA);
+                sendBroadcast(intent);
             }
         });
         IntentFilter filter = new IntentFilter();
         filter.addAction(UPDATE_ACTION);
         registerReceiver(activityReceiver, filter);
         Intent intent = new Intent(this, MusicService.class);
-        startService(intent);
+        intent.putExtra("COUNT",count);
+        intent.putExtra("DATA",Musics.get(0).DATA);
+        bindService(intent,);
         Log.d("Activity", "启动Service后");
     }
 
@@ -108,7 +112,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             TextView artist = new TextView(MainActivity.this);
             artist.setTextSize(18);
             artist.setTextColor(Color.GRAY);
-            artist.setText(Musics.get(position).ARTIST);
+            StringBuilder artistalbum = new StringBuilder("");
+            artistalbum.append(Musics.get(position).ARTIST);
+            artistalbum.append(" - ");
+            artistalbum.append(Musics.get(position).ALBUM);
+            artist.setText(artistalbum);
             linearLayout.addView(title);
             linearLayout.addView(artist);
             return linearLayout;

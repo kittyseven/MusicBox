@@ -18,10 +18,10 @@ import java.io.IOException;
 public class MusicService extends Service {
     ServiceReceiver serviceReceiver;
     int status = 0x11;
-    String musics[] = {"qiansixi.mp3", "tidengzhaoheshan.mp3", "jinlichao.mp3"};
     MediaPlayer player;
-    AssetManager am;
     int current = 0;
+    int count;
+    String path;
 
     @Nullable
     @Override
@@ -32,7 +32,6 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        am = getAssets();
         serviceReceiver = new ServiceReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(MainActivity.CTL_ACTION);
@@ -56,8 +55,8 @@ public class MusicService extends Service {
     public class ServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("Receiver","ServiceReceiver--onReceive");
             int control = intent.getIntExtra("control", -1);
+            String DATA = intent.getStringExtra("DATA");
             switch (control) {
                 case 1:
                     if (status == 0x11) {
@@ -78,6 +77,12 @@ public class MusicService extends Service {
                     }
                     break;
                 default:
+                    status = 0x11;
+                    try {
+                        player.setDataSource(DATA);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
             }
             Intent sendIntent = new Intent(MainActivity.UPDATE_ACTION);
