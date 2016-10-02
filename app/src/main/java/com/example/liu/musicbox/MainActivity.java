@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int status = 0x11;
 
     String[] titleStrs = new String[]{"牵丝戏", "提灯照河山", "锦鲤抄"};
-    String[] authorStrs = new String[]{"小魂", "", "司夏", "银临"};
+    String[] authorStrs = new String[]{"小魂", "司夏", "银临"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         registerReceiver(activityReceiver, filter);
         Intent intent = new Intent(this, MusicService.class);
         startService(intent);
-        Log.d("Activity","启动Service后");
+        Log.d("Activity", "启动Service后");
     }
 
     private void init() {
@@ -60,15 +60,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             switch (update) {
                 case 0x11:
-                    play.setImageResource(R.drawable.play);
+                    play.setImageResource(R.drawable.selector_play);
                     status = 0x11;
                     break;
                 case 0x12:
-                    play.setImageResource(R.drawable.pause);
+                    play.setImageResource(R.drawable.selector_pause);
                     status = 0x12;
                     break;
                 case 0x13:
-                    play.setImageResource(R.drawable.play);
+                    play.setImageResource(R.drawable.selector_play);
                     status = 0x13;
                     break;
             }
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        Log.d("onclick","进入了onclick");
+        Log.d("onclick", "进入了onclick");
         Intent intent = new Intent(CTL_ACTION);
         switch (v.getId()) {
             case R.id.play:

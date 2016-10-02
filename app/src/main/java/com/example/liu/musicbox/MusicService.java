@@ -14,13 +14,11 @@ import android.util.Log;
 
 import java.io.IOException;
 
-/**
- * Created by 诗倩 on 2016/9/20.
- */
+
 public class MusicService extends Service {
     ServiceReceiver serviceReceiver;
     int status = 0x11;
-    String musics[] = {"tidengzhaoheshan.mp3", "qiansixi.mp3", "jinlichao.mp3"};
+    String musics[] = {"qiansixi.mp3", "tidengzhaoheshan.mp3", "jinlichao.mp3"};
     MediaPlayer player;
     AssetManager am;
     int current = 0;
