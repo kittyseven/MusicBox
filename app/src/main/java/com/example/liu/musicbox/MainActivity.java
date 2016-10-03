@@ -33,10 +33,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<Music> Musics;
     ContentResolver cr;
     Cursor musics;
+
     //歌曲总数目，进度条总长度
     int count;
     //    当前进度
     int progressStatus;
+    //    当前播放的歌曲ID
+    int current;
+
     //    对话框形式的进度条
     ProgressDialog progressDialog;
 
@@ -71,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(CTL_ACTION);
-                intent.putExtra("DATA",Musics.get(position).DATA);
+                intent.putExtra("DATA", Musics.get(position).DATA);
                 sendBroadcast(intent);
             }
         });
@@ -79,10 +83,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filter.addAction(UPDATE_ACTION);
         registerReceiver(activityReceiver, filter);
         Intent intent = new Intent(this, MusicService.class);
-        intent.putExtra("COUNT",count);
-        intent.putExtra("DATA",Musics.get(0).DATA);
-        bindService(intent,);
-        Log.d("Activity", "启动Service后");
+        intent.putExtra("COUNT", count);
+        intent.putExtra("DATA", Musics.get(0).DATA);
+        startService(intent);
     }
 
     public BaseAdapter adapter = new BaseAdapter() {
@@ -158,10 +161,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             int update = intent.getIntExtra("update", -1);
-            int current = intent.getIntExtra("current", -1);
+            current = intent.getIntExtra("current", -1);
+            boolean isCompletion = intent.getBooleanExtra("isCompletion",false);
             if (current >= 0) {
                 title.setText(Musics.get(current).TITLE);
                 author.setText(Musics.get(current).ARTIST);
+                if (isCompletion)
+                {
+                    Intent Comintent = new Intent(CTL_ACTION);
+                    Comintent.putExtra("control", -1);
+                    Comintent.putExtra("DATA",Musics.get(current).DATA);
+                    sendBroadcast(Comintent);
+                }
             }
             switch (update) {
                 case 0x11:
@@ -190,6 +201,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.stop:
                 intent.putExtra("control", 2);
+                break;
+            case R.id.previous:
+                intent.putExtra("control", 3);
+                current--;
+                intent.putExtra("DATA",Musics.get(current).DATA);
+                break;
+            case R.id.next:
+                intent.putExtra("control", 4);
+                current++;
+                intent.putExtra("DATA",Musics.get(current).DATA);
                 break;
         }
         sendBroadcast(intent);

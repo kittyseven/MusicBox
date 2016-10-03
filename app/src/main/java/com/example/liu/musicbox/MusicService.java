@@ -5,12 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.IOException;
 
@@ -41,26 +38,34 @@ public class MusicService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 current++;
-                if (current >= 3) {
+                if (current >= count) {
                     current = 0;
                 }
                 Intent sendIntent = new Intent(MainActivity.UPDATE_ACTION);
                 sendIntent.putExtra("current", current);
+                sendIntent.putExtra("isCompletion",true);
                 sendBroadcast(sendIntent);
-                prepareAndPlay(musics[current]);
             }
         });
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        path = intent.getStringExtra("DATA");
+        count = intent.getIntExtra("COUNT", -1);
+        prepareAndPlay(path);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     public class ServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             int control = intent.getIntExtra("control", -1);
-            String DATA = intent.getStringExtra("DATA");
+            path = intent.getStringExtra("DATA");
             switch (control) {
                 case 1:
                     if (status == 0x11) {
-                        prepareAndPlay(musics[current]);
+                        prepareAndPlay(path);
                         status = 0x12;
                     } else if (status == 0x12) {
                         player.pause();
@@ -76,13 +81,18 @@ public class MusicService extends Service {
                         status = 0x11;
                     }
                     break;
+                case 3:
+                    status = 0x11;
+                    current--;
+                    prepareAndPlay(path);
+                    break;
+                case 4:
+                    status = 0x11;
+                    current++;
+                    prepareAndPlay(path);
                 default:
                     status = 0x11;
-                    try {
-                        player.setDataSource(DATA);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    prepareAndPlay(path);
                     break;
             }
             Intent sendIntent = new Intent(MainActivity.UPDATE_ACTION);
@@ -92,12 +102,10 @@ public class MusicService extends Service {
         }
     }
 
-    public void prepareAndPlay(String music) {
+    public void prepareAndPlay(String path) {
         try {
-            AssetFileDescriptor afd = am.openFd(music);
             player.reset();
-            player.setDataSource(afd.getFileDescriptor(),
-                    afd.getStartOffset(), afd.getLength());
+            player.setDataSource(path);
             player.prepare();
             player.start();
         } catch (IOException e) {
