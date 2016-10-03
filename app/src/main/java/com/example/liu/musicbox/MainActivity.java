@@ -108,12 +108,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public View getView(int position, View convertView, ViewGroup parent) {
             LinearLayout linearLayout = new LinearLayout(MainActivity.this);
             linearLayout.setOrientation(LinearLayout.VERTICAL);
+            linearLayout.setBackgroundColor(Color.WHITE);
             TextView title = new TextView(MainActivity.this);
             title.setTextSize(20);
             title.setTextColor(Color.BLACK);
             title.setText(Musics.get(position).TITLE);
             TextView artist = new TextView(MainActivity.this);
-            artist.setTextSize(18);
+            artist.setTextSize(10);
             artist.setTextColor(Color.GRAY);
             StringBuilder artistalbum = new StringBuilder("");
             artistalbum.append(Musics.get(position).ARTIST);
